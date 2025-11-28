@@ -46,6 +46,10 @@
             position: relative;
         }
 
+        .align-items-center{
+            align-items: center;
+        }
+
         /* 頂部狀態列 */
         .status-bar {
             display: flex;
@@ -314,43 +318,47 @@
 
         function getWeatherIcon(weather) {
             if (!weather) return "☁️"; // 默認為雲朵
-            if (weather.includes("晴")) return "☀️"; // 太陽
+            if (weather.includes("晴")) return "🌞"; // 太陽
+            if (weather.includes("晴") && weather.includes("雲")) return "🌤️"; // 太陽
             if (weather.includes("多雲") || weather.includes("陰")) return "☁️"; // 雲朵
-            if (weather.includes("雨") || weather.includes("雷")) return "🌧️"; // 下雨或雷雨
+            if (weather.includes("雨")) return "🌧️"; // 下雨
+            if (weather.includes("雷")) return "⚡"; // 雷雨
+            if (weather.includes("風")) return "🌀"; // 風
             return "✨"; // 預設魔法效果
         }
 
         function getAdvice(rainProb, maxTemp) {
             let rainIcon = "🛡️"; // 盾牌或魔法符號
-            let rainText = "不用施展防水咒";
-            if (parseInt(rainProb) > 30) {
+            let rainText = `不會下雨 <br> 免施展防水咒`;
+            if (parseInt(rainProb) > 40) {
                 rainIcon = "☔"; // 雨傘
-                rainText = "請施展防水咒！";
-            } else if (parseInt(rainProb) > 5) {
+                rainText = `會下雨喔 <br> 請施展防水咒！`;
+            } else if (parseInt(rainProb) > 10) {
                 rainIcon = "💧"; // 水滴
-                rainText = "以防萬一，施個微弱防水咒";
+                rainText = `可能下雨 <br> 施個微弱防水咒`;
             }
 
             let clothIcon = "🧙"; // 巫師
-            let clothText = "適合學院常服";
+            let clothText = "適合巫師袍";
             if (parseInt(maxTemp) >= 28) {
-                clothText = "短袖袍或輕薄巫師服";
+                clothText = `天氣炎熱 <br> 短袖輕薄巫師服`;
+            } else if (parseInt(maxTemp) <= 24) {
+                clothText = `微涼舒適 <br> 薄長巫師袍即可`;
             } else if (parseInt(maxTemp) <= 20) {
-                clothText = "加件厚實斗篷！";
-            } else if (parseInt(maxTemp) <= 25) {
-                clothText = "輕便巫師袍即可";
+                clothText = `相當冷喔 <br> 長巫師袍加保暖斗篷！`;
+            } else if (parseInt(maxTemp) <= 15) {
+                clothText = `超級冷喔 <br> 要穿最厚實的斗篷！`;
             }
-
             return { rainIcon, rainText, clothIcon, clothText };
         }
 
         function getTimePeriod(startTime) {
             const hour = new Date(startTime).getHours();
-            if (hour >= 5 && hour < 11) return "黎明時分";
+            if (hour >= 5 && hour < 11) return "黎明早晨";
             if (hour >= 11 && hour < 14) return "正午時刻";
             if (hour >= 14 && hour < 18) return "下午茶後";
             if (hour >= 18 && hour < 23) return "晚間課程";
-            return "夜巡時段";
+            return "三更半夜";
         }
 
         function renderWeather(data) {
@@ -365,7 +373,7 @@
 
             document.getElementById('heroCard').innerHTML = `
                         <div class="hero-card">
-                            <div class="hero-period">⭐ 天文塔觀測：${period} </div>
+                            <div class="hero-period"> 天文塔觀測：${period} </div>
                             <div class="hero-temp-container">
                                 <span class="hero-icon">${getWeatherIcon(current.weather)}</span>
                                 <div class="hero-temp">${avgTemp}°</div>
@@ -374,12 +382,12 @@
                             
                             <div class="advice-grid">
                                 <div class="advice-item">
-                                    <span class="advice-icon">${advice.rainIcon}</span>
+                                    <div class="d-flex align-items-center"><span class="advice-icon">${advice.rainIcon}</span> <span style="font-size:1.0rem; color:var(--hp-dark-green))">降雨預報</span></div> 
                                     <div class="advice-text">${advice.rainText}</div>
                                     <div style="font-size:0.7rem; color:var(--hp-card-shadow)">雨水魔力 ${current.rain} </div>
                                 </div>
                                 <div class="advice-item">
-                                    <span class="advice-icon">${advice.clothIcon}</span>
+                                    <div class="d-flex align-items-center"><span class="advice-icon">${advice.clothIcon}</span> <span style="font-size:1.0rem; color:var(--hp-dark-green))">穿搭建議</span></div> 
                                     <div class="advice-text">${advice.clothText}</div>
                                     <div style="font-size:0.7rem; color:var(--hp-card-shadow)">最高溫度 ${current.maxTemp}°</div>
                                 </div>
@@ -399,6 +407,8 @@
                 const fDate = new Date(f.startTime);
                 if (fDate.getDate() !== todayDate) {
                     p = "🔮 明日 " + p;
+                } else {
+                    p = "🔮 今日 " + p;
                 }
 
                 scrollContainer.innerHTML += `
@@ -416,9 +426,11 @@
             const month = now.getMonth() + 1;
             const date = now.getDate();
             const dayIndex = now.getDay();
-            const days = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            const days = ["(日)", "(一)", "(二)", "(三)", "(四)", "(五)", "(六)"];
 
-            document.getElementById('updateTime').textContent = `${month}月${date}日 ${days[dayIndex]}`;
+            document.getElementById('updateTime').textContent = `${month}/${date} ${days[dayIndex]} ${hours}:${minutes}`;
         }
 
         async function fetchWeather() {
