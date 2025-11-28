@@ -67,10 +67,10 @@
             /* 像羊皮紙捲的風格 */
             background: var(--hp-parchment);
             color: var(--hp-red);
-            padding: 5px 15px;
+            padding: 5px 10px;
             border-radius: 20px;
             font-weight: 900;
-            font-size: 1.1rem;
+            font-size: 0.9rem;
             transform: rotate(-1deg);
             border: 3px solid var(--hp-gold);
             box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
@@ -121,7 +121,7 @@
             transform: translateX(-50%);
             background: var(--hp-red);
             color: white;
-            padding: 5px 20px;
+            padding: 5px 15px;
             border-radius: 20px;
             font-weight: bold;
             border: 3px solid var(--hp-gold);
@@ -373,7 +373,7 @@
 
             document.getElementById('heroCard').innerHTML = `
                         <div class="hero-card">
-                            <div class="hero-period"> 天文塔觀測：${period} </div>
+                            <div class="hero-period"> 天文塔觀測 <br> ${period} </div>
                             <div class="hero-temp-container">
                                 <span class="hero-icon">${getWeatherIcon(current.weather)}</span>
                                 <div class="hero-temp">${avgTemp}°</div>
@@ -382,12 +382,12 @@
                             
                             <div class="advice-grid">
                                 <div class="advice-item">
-                                    <div class="d-flex align-items-center"><span class="advice-icon">${advice.rainIcon}</span> <span style="font-size:1.0rem; color:var(--hp-dark-green))">降雨預報</span></div> 
+                                    <div class="d-flex align-items-center"><span class="advice-icon">${advice.rainIcon}</span> <span style="font-size:1.0rem; color:var(--hp-dark-green))">降雨</span></div> 
                                     <div class="advice-text">${advice.rainText}</div>
                                     <div style="font-size:0.7rem; color:var(--hp-card-shadow)">雨水魔力 ${current.rain} </div>
                                 </div>
                                 <div class="advice-item">
-                                    <div class="d-flex align-items-center"><span class="advice-icon">${advice.clothIcon}</span> <span style="font-size:1.0rem; color:var(--hp-dark-green))">穿搭建議</span></div> 
+                                    <div class="d-flex align-items-center"><span class="advice-icon">${advice.clothIcon}</span> <span style="font-size:1.0rem; color:var(--hp-dark-green))">穿搭</span></div> 
                                     <div class="advice-text">${advice.clothText}</div>
                                     <div style="font-size:0.7rem; color:var(--hp-card-shadow)">最高溫度 ${current.maxTemp}°</div>
                                 </div>
@@ -426,8 +426,10 @@
             const month = now.getMonth() + 1;
             const date = now.getDate();
             const dayIndex = now.getDay();
-            const hours = now.getHours();
-            const minutes = now.getMinutes();
+            let hours = now.getHours();
+            hours = String(hours).padStart(2, '0'); // 補零
+            let minutes = now.getMinutes();
+            minutes = String(minutes).padStart(2, '0'); // 補零
             const days = ["(日)", "(一)", "(二)", "(三)", "(四)", "(五)", "(六)"];
 
             document.getElementById('updateTime').textContent = `${month}/${date} ${days[dayIndex]} ${hours}:${minutes}`;
